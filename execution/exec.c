@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa </var/spool/mail/zaalrafa>        +#+  +:+       +#+        */
+/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 22:09:29 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/04/29 20:58:27 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/05/11 13:19:35 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	ft_env(char **env_array)
 	}
 }
 // add to t_cmd a shell ponter
+
 void	ft_unset(t_shell *shell)
 {
 	int		i;
