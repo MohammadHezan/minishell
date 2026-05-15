@@ -1,41 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
+/*   parse_core.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/28 22:09:29 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/05/10 13:29:04 by zaalrafa         ###   ########.fr       */
+/*   Created: 2026/05/12 11:13:50 by mohammad-he       #+#    #+#             */
+/*   Updated: 2026/05/12 11:13:51 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <unistd.h>
 
-void	child_process(t_shell *shell, t_cmd *cmd)
+bool	parse_input(t_shell *shell, char *input)
 {
-	char	*cmd_pt;
-
-	cmd_pt = cmd_path(shell, cmd->args[0]);
-	execve(cmd_pt, cmd->args, shell->env_array);
-	exit(1);
-}
-
-void	exec_external(t_shell *shell)
-{
-	*shell->pids = fork();
-	if (shell->pids == 0)
+	shell->tokens = tokenize_input(input);
+	if (!shell->tokens)
+		return (false);
+	if (!check_syntax(shell->tokens))
 	{
+		printf("minishell: syntax error\n");
+		shell->exit_status = 258;
+		return (false);
 	}
-}
-
-void	exec(t_shell *shell)
-{
-	if (check_built_in(shell))
-		built_in(shell);
-	else if (shell->current_cmd[0].pipe)
-		exec_pipe(shell);
-	else
-		exec_external(shell);
+	expand_tokens(shell);
+	shell->current_cmd = build_cmd_table(shell->tokens);
+	if (!shell->current_cmd)
+		return (false);
+	return (true);
 }

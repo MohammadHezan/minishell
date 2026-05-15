@@ -1,3 +1,9 @@
 [submodule "42_libft"]
 	path = 42_libft
-	url = git@github.com:Zaid-Alrafayia/42_libft.git
+	url = https://github.com/Zaid-Alrafayia/42_libft.git
+[submodule "42_gnl"]
+	path = 42_gnl
+	url = https://github.com/Zaid-Alrafayia/get_next_line.git
+[submodule "42_pipex"]
+	path = 42_pipex
+	url = https://github.com/Zaid-Alrafayia/pipex.git
