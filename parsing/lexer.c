@@ -5,82 +5,80 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/12 11:13:41 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/12 11:18:58 by mohammad-he      ###   ########.fr       */
+/*   Created: 2026/05/15 22:51:10 by mohammad-he       #+#    #+#             */
+/*   Updated: 2026/05/15 22:51:12 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	handle_quotes(char *s, int i, t_token **toks)
+static int	skip_spaces(char *in, int i)
 {
-	int		len;
-	char	q;
-	int		qt;
-
-	q = s[i];
-	len = 1;
-	while (s[i + len] && s[i + len] != q)
-		len++;
-	if (s[i + len] == q)
-		len++;
-	if (q == '\'')
-		qt = 1;
-	else
-		qt = 2;
-	add_token(toks, create_tok(ft_substr(s, i, len), CMD, qt));
-	return (len);
+	while (in[i] && (in[i] == ' ' || in[i] == '\t'))
+		i++;
+	return (i);
 }
 
-static int	handle_operator(char *s, int i, t_token **toks)
+static int	extract_operator(char *in, int i, t_token **toks)
 {
-	if (!ft_strncmp(&s[i], "<<", 2))
-		return (add_token(toks, create_tok(ft_strdup("<<"), HEREDOC, 0)) + 1);
-	if (!ft_strncmp(&s[i], ">>", 2))
-		return (add_token(toks, create_tok(ft_strdup(">>"), APPEND, 0)) + 1);
-	if (s[i] == '<')
-		return (add_token(toks, create_tok(ft_strdup("<"), REDIRECT_IN, 0)));
-	if (s[i] == '>')
-		return (add_token(toks, create_tok(ft_strdup(">"), REDIRECT_OUT, 0)));
-	if (s[i] == '|')
-		return (add_token(toks, create_tok(ft_strdup("|"), PIPE, 0)));
+	if (in[i] == '>' && in[i + 1] == '>')
+		return (add_token(toks, create_tok(">>", APPEND, 0)), 2);
+	if (in[i] == '<' && in[i + 1] == '<')
+		return (add_token(toks, create_tok("<<", HEREDOC, 0)), 2);
+	if (in[i] == '>')
+		return (add_token(toks, create_tok(">", TRUNCATE, 0)), 1);
+	if (in[i] == '<')
+		return (add_token(toks, create_tok("<", REDIRECT_IN, 0)), 1);
+	if (in[i] == '|')
+		return (add_token(toks, create_tok("|", PIPE, 0)), 1);
 	return (0);
 }
 
-static int	handle_word(char *s, int i, t_token **toks)
+static int	get_word_len(char *in, int i)
 {
-	int		len;
-	char	*val;
+	int	len;
+	int	q;
 
 	len = 0;
-	while (s[i + len] && s[i + len] != ' ' && s[i + len] != '\t'
-		&& s[i + len] != '|' && s[i + len] != '<' && s[i + len] != '>'
-		&& s[i + len] != '\'' && s[i + len] != '\"')
+	q = 0;
+	while (in[i + len])
+	{
+		if (!q && (in[i + len] == ' ' || in[i + len] == '\t'
+				|| in[i + len] == '|' || in[i + len] == '<'
+				|| in[i + len] == '>'))
+			break ;
+		if ((in[i + len] == '\'' || in[i + len] == '\"') && !q)
+			q = in[i + len];
+		else if (in[i + len] == q)
+			q = 0;
 		len++;
-	val = ft_substr(s, i, len);
-	add_token(toks, create_tok(val, CMD, 0));
+	}
 	return (len);
 }
 
 t_token	*tokenize_input(char *in)
 {
 	t_token	*toks;
+	char	*val;
 	int		i;
+	int		len;
 
 	toks = NULL;
 	i = 0;
 	while (in[i])
 	{
-		while (in[i] == ' ' || in[i] == '\t')
-			i++;
+		i = skip_spaces(in, i);
 		if (!in[i])
 			break ;
-		if (in[i] == '\'' || in[i] == '\"')
-			i += handle_quotes(in, i, &toks);
-		else if (in[i] == '|' || in[i] == '<' || in[i] == '>')
-			i += handle_operator(in, i, &toks);
-		else
-			i += handle_word(in, i, &toks);
+		len = extract_operator(in, i, &toks);
+		if (len == 0)
+		{
+			len = get_word_len(in, i);
+			val = ft_substr(in, i, len);
+			add_token(&toks, create_tok(val, CMD, 0));
+			free(val);
+		}
+		i += len;
 	}
 	return (toks);
 }

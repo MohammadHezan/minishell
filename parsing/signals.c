@@ -1,31 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_core.c                                       :+:      :+:    :+:   */
+/*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/15 22:50:22 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/15 22:50:23 by mohammad-he      ###   ########.fr       */
+/*   Created: 2026/05/15 22:49:50 by mohammad-he       #+#    #+#             */
+/*   Updated: 2026/05/15 22:49:55 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-bool	parse_input(t_shell *shell, char *input)
+static void	handle_sigint(int sig)
 {
-	if (!input || !*input)
-		return (false);
-	shell->tokens = tokenize_input(input);
-	if (!shell->tokens)
-		return (false);
-	if (!check_syntax(shell->tokens))
-	{
-		free_cycle(shell);
-		shell->exit_status = 258;
-		return (false);
-	}
-	expand_tokens(shell);
-	shell->current_cmd = build_cmd_table(shell->tokens);
-	return (true);
+	(void)sig;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void	init_signals(void)
+{
+	signal(SIGINT, handle_sigint);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+void	exec_signals(void)
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 }

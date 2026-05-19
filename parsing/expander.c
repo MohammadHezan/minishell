@@ -5,53 +5,80 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/12 11:35:17 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/12 11:35:42 by mohammad-he      ###   ########.fr       */
+/*   Created: 2026/05/15 22:51:56 by mohammad-he       #+#    #+#             */
+/*   Updated: 2026/05/15 22:51:57 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static char	*get_env_val(t_shell *shell, char *key)
+static int	skip_spaces(char *in, int i)
 {
-	t_env	*env;
-	size_t	len;
-
-	if (key[0] == '?')
-		return (ft_itoa(shell->exit_status));
-	env = shell->env;
-	len = ft_strlen(key);
-	while (env)
-	{
-		if (!ft_strncmp(env->key, key, len) && ft_strlen(env->key) == len)
-			return (ft_strdup(env->value));
-		env = env->next;
-	}
-	return (ft_strdup(""));
+	while (in[i] && (in[i] == ' ' || in[i] == '\t'))
+		i++;
+	return (i);
 }
 
-void	expand_tokens(t_shell *shell)
+static int	extract_operator(char *in, int i, t_token **toks)
 {
-	t_token	*cur;
-	char	*new_val;
+	if (in[i] == '>' && in[i + 1] == '>')
+		return (add_token(toks, create_tok(">>", APPEND, 0)), 2);
+	if (in[i] == '<' && in[i + 1] == '<')
+		return (add_token(toks, create_tok("<<", HEREDOC, 0)), 2);
+	if (in[i] == '>')
+		return (add_token(toks, create_tok(">", TRUNCATE, 0)), 1);
+	if (in[i] == '<')
+		return (add_token(toks, create_tok("<", REDIRECT_IN, 0)), 1);
+	if (in[i] == '|')
+		return (add_token(toks, create_tok("|", PIPE, 0)), 1);
+	return (0);
+}
 
-	cur = shell->tokens;
-	while (cur)
+static int	get_word_len(char *in, int i)
+{
+	int	len;
+	int	q;
+
+	len = 0;
+	q = 0;
+	while (in[i + len])
 	{
-		if (cur->type == HEREDOC)
-		{
-			if (cur->next)
-				cur = cur->next->next;
-			else
-				cur = cur->next;
-			continue ;
-		}
-		if (cur->type == CMD && cur->quote_type != 1 && cur->value[0] == '$')
-		{
-			new_val = get_env_val(shell, cur->value + 1);
-			free(cur->value);
-			cur->value = new_val;
-		}
-		cur = cur->next;
+		if (!q && (in[i + len] == ' ' || in[i + len] == '\t'
+				|| in[i + len] == '|' || in[i + len] == '<'
+				|| in[i + len] == '>'))
+			break ;
+		if ((in[i + len] == '\'' || in[i + len] == '\"') && !q)
+			q = in[i + len];
+		else if (in[i + len] == q)
+			q = 0;
+		len++;
 	}
+	return (len);
+}
+
+t_token	*tokenize_input(char *in)
+{
+	t_token	*toks;
+	char	*val;
+	int		i;
+	int		len;
+
+	toks = NULL;
+	i = 0;
+	while (in[i])
+	{
+		i = skip_spaces(in, i);
+		if (!in[i])
+			break ;
+		len = extract_operator(in, i, &toks);
+		if (len == 0)
+		{
+			len = get_word_len(in, i);
+			val = ft_substr(in, i, len);
+			add_token(&toks, create_tok(val, CMD, 0));
+			free(val);
+		}
+		i += len;
+	}
+	return (toks);
 }

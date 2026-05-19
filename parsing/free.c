@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/12 11:13:34 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/12 11:19:40 by mohammad-he      ###   ########.fr       */
+/*   Created: 2026/05/15 22:51:45 by mohammad-he       #+#    #+#             */
+/*   Updated: 2026/05/15 22:51:46 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,15 @@ static void	free_cmds(t_cmd *cmd)
 	while (cmd)
 	{
 		tmp = cmd->next;
-		i = 0;
 		if (cmd->args)
 		{
+			i = 0;
 			while (cmd->args[i])
 				free(cmd->args[i++]);
 			free(cmd->args);
 		}
+		if (cmd->limiter)
+			free(cmd->limiter);
 		free(cmd);
 		cmd = tmp;
 	}
@@ -47,23 +49,14 @@ static void	free_cmds(t_cmd *cmd)
 
 void	free_cycle(t_shell *shell)
 {
-	free_tokens(shell->tokens);
-	shell->tokens = NULL;
-	free_cmds(shell->current_cmd);
-	shell->current_cmd = NULL;
-}
-
-void	free_shell(t_shell *shell)
-{
-	t_env	*tmp;
-
-	free_cycle(shell);
-	while (shell->env)
+	if (shell->tokens)
 	{
-		tmp = shell->env->next;
-		free(shell->env->key);
-		free(shell->env->value);
-		free(shell->env);
-		shell->env = tmp;
+		free_tokens(shell->tokens);
+		shell->tokens = NULL;
+	}
+	if (shell->current_cmd)
+	{
+		free_cmds(shell->current_cmd);
+		shell->current_cmd = NULL;
 	}
 }

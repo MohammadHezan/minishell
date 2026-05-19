@@ -5,47 +5,57 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/12 11:13:19 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/12 11:19:33 by mohammad-he      ###   ########.fr       */
+/*   Created: 2026/05/15 22:48:57 by mohammad-he       #+#    #+#             */
+/*   Updated: 2026/05/15 22:48:58 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static void	append_env(t_env **head, t_env *new_node)
+static t_env	*create_env_node(char *str)
 {
-	t_env	*cur;
+	t_env	*node;
+	char	*eq;
 
-	if (!*head)
-		*head = new_node;
+	node = malloc(sizeof(t_env));
+	if (!node)
+		return (NULL);
+	eq = ft_strchr(str, '=');
+	if (eq)
+	{
+		node->key = ft_substr(str, 0, eq - str);
+		node->value = ft_strdup(eq + 1);
+	}
 	else
 	{
-		cur = *head;
-		while (cur->next)
-			cur = cur->next;
-		cur->next = new_node;
+		node->key = ft_strdup(str);
+		node->value = NULL;
 	}
+	node->next = NULL;
+	return (node);
 }
 
 t_env	*init_env(char **envp)
 {
 	t_env	*head;
-	t_env	*new_node;
+	t_env	*curr;
 	int		i;
-	int		j;
 
 	head = NULL;
-	i = -1;
-	while (envp && envp[++i])
+	i = 0;
+	while (envp && envp[i])
 	{
-		new_node = malloc(sizeof(t_env));
-		j = 0;
-		while (envp[i][j] && envp[i][j] != '=')
-			j++;
-		new_node->key = ft_substr(envp[i], 0, j);
-		new_node->value = ft_strdup(envp[i] + j + 1);
-		new_node->next = NULL;
-		append_env(&head, new_node);
+		if (!head)
+		{
+			head = create_env_node(envp[i]);
+			curr = head;
+		}
+		else
+		{
+			curr->next = create_env_node(envp[i]);
+			curr = curr->next;
+		}
+		i++;
 	}
 	return (head);
 }

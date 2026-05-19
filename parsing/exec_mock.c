@@ -5,41 +5,44 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/12 11:12:52 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/12 11:39:40 by mohammad-he      ###   ########.fr       */
+/*   Created: 2026/05/15 22:52:25 by mohammad-he       #+#    #+#             */
+/*   Updated: 2026/05/15 22:54:42 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+static void	print_cmd_args(t_cmd *cmd)
+{
+	int	i;
+
+	i = 0;
+	if (cmd->args)
+	{
+		while (cmd->args[i])
+		{
+			printf("  Arg[%d]: %s\n", i, cmd->args[i]);
+			i++;
+		}
+	}
+}
+
 void	execute_commands(t_shell *shell)
 {
 	t_cmd	*cmd;
-	int		i;
-	int		c;
+	int		cmd_num;
 
 	cmd = shell->current_cmd;
-	c = 1;
+	cmd_num = 1;
 	while (cmd)
 	{
-		printf("--- PARSED COMMAND TABLE NODE %d ---\n", c++);
-		i = 0;
-		if (cmd->args)
-		{
-			while (cmd->args[i])
-			{
-				printf("Arg[%d]: [%s]\n", i, cmd->args[i]);
-				i++;
-			}
-		}
-		if (cmd->infile != STDIN_FILENO)
-			printf("infile: %d\n", cmd->infile);
-		if (cmd->outfile != STDOUT_FILENO)
-			printf("outfile: %d\n", cmd->outfile);
-		if (cmd->append)
-			printf("append: true\n");
+		printf("--- CMD Node %d ---\n", cmd_num++);
+		print_cmd_args(cmd);
+		printf("  Infile fd: %d\n", cmd->infile);
+		printf("  Outfile fd: %d\n", cmd->outfile);
+		printf("  Append mode: %d\n", cmd->append);
 		if (cmd->limiter)
-			printf("limiter: [%s]\n", cmd->limiter);
+			printf("  Heredoc Limiter: %s\n", cmd->limiter);
 		cmd = cmd->next;
 	}
 }

@@ -5,29 +5,54 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/12 11:33:42 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/12 11:33:57 by mohammad-he      ###   ########.fr       */
+/*   Created: 2026/05/15 22:53:02 by mohammad-he       #+#    #+#             */
+/*   Updated: 2026/05/15 22:53:05 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	open_file(char *file, int mode)
+static void	print_redir_err(char *file)
 {
-	int	fd;
+	write(2, "minishell: ", 11);
+	perror(file);
+}
 
-	if (mode == 0)
-		fd = open(file, O_RDONLY);
-	else if (mode == 1)
-		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	else
-		fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (fd == -1)
+static void	open_infile(t_cmd *cmd, char *file)
+{
+	if (cmd->infile != STDIN_FILENO)
+		close(cmd->infile);
+	cmd->infile = open(file, O_RDONLY);
+	if (cmd->infile == -1)
+		print_redir_err(file);
+}
+
+static void	open_outfile(t_cmd *cmd, char *file, t_token_type type)
+{
+	if (cmd->outfile != STDOUT_FILENO)
+		close(cmd->outfile);
+	if (type == REDIRECT_OUT || type == TRUNCATE)
 	{
-		perror(file);
-		return (-1);
+		cmd->outfile = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		cmd->append = false;
 	}
-	return (fd);
+	else if (type == APPEND)
+	{
+		cmd->outfile = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		cmd->append = true;
+	}
+	if (cmd->outfile == -1)
+		print_redir_err(file);
+}
+
+static void	open_file(t_cmd *cmd, char *file, t_token_type type)
+{
+	if (cmd->infile == -1 || cmd->outfile == -1)
+		return ;
+	if (type == REDIRECT_IN)
+		open_infile(cmd, file);
+	else if (type == REDIRECT_OUT || type == TRUNCATE || type == APPEND)
+		open_outfile(cmd, file, type);
 }
 
 void	handle_redirection(t_cmd *cmd, t_token **tok)
@@ -40,18 +65,13 @@ void	handle_redirection(t_cmd *cmd, t_token **tok)
 	if (!*tok)
 		return ;
 	file = (*tok)->value;
-	if (type == REDIRECT_IN)
+	if (type == HEREDOC)
 	{
-		if (cmd->infile != STDIN_FILENO)
+		if (cmd->infile != STDIN_FILENO && cmd->infile != -1)
 			close(cmd->infile);
-		cmd->infile = open_file(file, 0);
+		cmd->infile = handle_heredoc(file);
 	}
-	else if (type == REDIRECT_OUT || type == APPEND)
-	{
-		if (cmd->outfile != STDOUT_FILENO)
-			close(cmd->outfile);
-		cmd->outfile = open_file(file, (type == APPEND) + 1);
-	}
-	else if (type == HEREDOC)
-		cmd->limiter = ft_strdup(file);
+	else
+		open_file(cmd, file, type);
+	*tok = (*tok)->next;
 }

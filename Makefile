@@ -1,21 +1,23 @@
 CC          = cc
-CFLAGS      = -Wall -Wextra -Werror -I. -I42_libft -I42_gnl
+CFLAGS      = -Wall -Wextra -Werror -I. -I42_libft 
 RM          = rm -f
 
 NAME        = minishell
 
-
-PARSING_SRC = parsing/cmd_builder.c \
-              parsing/env_init.c \
-              parsing/exec_mock.c \
-              parsing/expander.c \
-              parsing/free.c \
-              parsing/lexer_utils.c \
+PARSING_SRC = parsing/lexer_utils.c \
               parsing/lexer.c \
-              parsing/main.c \
-              parsing/parse_core.c \
               parsing/syntax_check.c \
-              parsing/redirections.c
+              parsing/env_init.c \
+              parsing/free.c \
+              parsing/cmd_builder.c \
+              parsing/redirections.c \
+              parsing/heredoc.c \
+              parsing/expander_utils.c \
+              parsing/expander_core.c \
+              parsing/parse_core.c \
+              parsing/exec_mock.c \
+              parsing/signals.c \
+              parsing/main.c
 
 EXECUTION_SRC = execution/builtin.c \
                 execution/builtin2.c \

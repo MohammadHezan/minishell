@@ -3,44 +3,48 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa </var/spool/mail/zaalrafa>        +#+  +:+       +#+        */
+/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/10 13:14:24 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/05/10 13:27:11 by zaalrafa         ###   ########.fr       */
+/*   Created: 2026/05/19 10:10:34 by mohammad-he       #+#    #+#             */
+/*   Updated: 2026/05/19 10:11:28 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-/*
- we can create this function by reading the data from stdin and then save it to a variable in the cmd struct
- this function down here is something you can take some ideas from.
- */
-void	lim_handler(t_shell *shell)
+static void	read_heredoc_lines(int fd, char *limiter)
 {
-	char	*str;
-	size_t	len;
-	int		fd[2];
+	char	*line;
 
-	//	if (pipe(fd) == -1)
-	// 	needs a error_message function that stops the execution
-	len = ft_strlen(shell->tokens[3].value);
-	// index needs to be changed based on parsing
 	while (1)
 	{
-		printf("here_doc> ");
-		str = get_next_line(0);
-		if (!str)
-			break ;
-		if (ft_strncmp(str, shell->tokens[3].value, len) == 0
-			&& str[len] == '\n')
+		line = readline("> ");
+		if (!line)
 		{
-			free(str);
+			write(2, "minishell: warning: delimited by EOF\n", 38);
 			break ;
 		}
-		write(fd[1], str, ft_strlen(str));
-		free(str);
+		if (ft_strncmp(line, limiter, ft_strlen(limiter) + 1) == 0)
+		{
+			free(line);
+			break ;
+		}
+		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1);
+		free(line);
 	}
+}
+
+int	handle_heredoc(char *limiter)
+{
+	int	fd[2];
+
+	if (pipe(fd) == -1)
+	{
+		perror("minishell: pipe");
+		return (-1);
+	}
+	read_heredoc_lines(fd[1], limiter);
 	close(fd[1]);
-	// shell-> = fd[0]; here should be where we save the pipe fd input to our input for the cmd
+	return (fd[0]);
 }

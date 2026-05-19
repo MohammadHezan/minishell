@@ -5,24 +5,44 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/12 11:12:42 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/12 11:19:04 by mohammad-he      ###   ########.fr       */
+/*   Created: 2026/05/15 22:50:33 by mohammad-he       #+#    #+#             */
+/*   Updated: 2026/05/15 22:50:34 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+void	init_signals(void);
+
 void	init_shell(t_shell *shell, char **envp)
 {
+	shell->env = init_env(envp);
+	shell->env_array = envp;
 	shell->history = NULL;
 	shell->pids = NULL;
+	shell->tokens = NULL;
+	shell->current_cmd = NULL;
+	shell->exit_status = 0;
 	shell->stdin_backup = dup(STDIN_FILENO);
 	shell->stdout_backup = dup(STDOUT_FILENO);
-	shell->env_array = NULL;
-	shell->env = init_env(envp);
-	shell->current_cmd = NULL;
-	shell->tokens = NULL;
-	shell->exit_status = 0;
+}
+
+void	free_shell(t_shell *shell)
+{
+	t_env	*tmp;
+
+	free_cycle(shell);
+	while (shell->env)
+	{
+		tmp = shell->env->next;
+		free(shell->env->key);
+		if (shell->env->value)
+			free(shell->env->value);
+		free(shell->env);
+		shell->env = tmp;
+	}
+	close(shell->stdin_backup);
+	close(shell->stdout_backup);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -35,18 +55,18 @@ int	main(int argc, char **argv, char **envp)
 	init_shell(&shell, envp);
 	while (1)
 	{
-		write(1, "minishell$ ", 12);
-		input = get_next_line(0);
+		init_signals();
+		input = readline("minishell$ ");
 		if (!input)
 			break ;
-		if (input[0] && input[0] != '\n')
-		{
-			if (parse_input(&shell, input))
-				execute_commands(&shell);
-			free_cycle(&shell);
-		}
+		if (*input)
+			add_history(input);
+		if (parse_input(&shell, input))
+			execute_commands(&shell);
+		free_cycle(&shell);
 		free(input);
 	}
 	free_shell(&shell);
+	write(1, "exit\n", 5);
 	return (shell.exit_status);
 }

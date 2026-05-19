@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa </var/spool/mail/zaalrafa>        +#+  +:+       +#+        */
+/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/10 13:29:45 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/05/14 00:08:35 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/05/19 10:18:06 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	ft_env(t_shell *shell)
 		i++;
 	}
 }
+
 void	ft_cd(t_cmd *cmd)
 {
 	char	*path;
