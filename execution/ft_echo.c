@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   ft_echo.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa </var/spool/mail/zaalrafa>        +#+  +:+       +#+        */
+/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/17 12:02:07 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/05/17 12:02:36 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/05/19 10:43:54 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../minishell.h"
 
 static int	is_n_flag(char *arg)

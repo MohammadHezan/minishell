@@ -24,9 +24,14 @@ EXECUTION_SRC = execution/builtin.c \
                 execution/builtin_checkers.c \
                 execution/env.c \
                 execution/exec.c \
-                execution/path.c
+                execution/path.c \
+                execution/ft_echo.c \
+                execution/pipe.c
 
-SRCS        = $(PARSING_SRC) $(EXECUTION_SRC)
+UTILS         = utils/free.c \
+                utils/utils.c 
+
+SRCS        = $(PARSING_SRC) $(EXECUTION_SRC) $(UTILS)
 
 OBJS        = $(SRCS:.c=.o)
 

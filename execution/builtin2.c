@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa </var/spool/mail/zaalrafa>        +#+  +:+       +#+        */
+/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 00:09:00 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/05/14 00:09:24 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/05/19 10:41:46 by mohammad-he      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../minishell.h"
-#include <stdbool.h>
 
 void	ft_unset(t_shell *shell, t_cmd *cmd)
 {
