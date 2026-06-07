@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/10 13:29:45 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/05/19 10:18:06 by mohammad-he      ###   ########.fr       */
+/*   Updated: 2026/06/07 14:19:10 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	ft_env(t_shell *shell)
 		printf("%s\n", shell->env_array[i]);
 		i++;
 	}
+	shell->exit_status = 0;
 }
 
 void	ft_cd(t_cmd *cmd)
@@ -143,7 +144,6 @@ void	ft_exit(t_cmd *cmd)
 	int			i;
 
 	i = 1;
-	ft_putendl_fd("exit", 2);
 	if (cmd->args[i] && ft_strcmp(cmd->args[i], "--") == 0)
 		i++;
 	if (!cmd->args[i])
@@ -154,20 +154,23 @@ void	ft_exit(t_cmd *cmd)
 	code = ft_atoll(arg);
 	if (cmd->args[i + 1])
 	{
-		ft_putendl_fd("minishell: exit: too many arguments", 2);
+		ft_putendl_fd("minishell: exit too many arguments", 2);
 		cmd->shell->exit_status = 1;
 		return ;
 	}
+		ft_putendl_fd("exit", 2);
 	free_shell(cmd->shell);
 	exit((unsigned char)code);
 }
 
-void	ft_pwd(void)
+void	ft_pwd(t_shell *shell)
 {
 	char	cwd[4096];
 
 	if (getcwd(cwd, sizeof(cwd)))
-		printf("%s\n", cwd);
+		{printf("%s\n", cwd);
+			shell->exit_status = 0;
+		}
 	else
 		perror("minishell: pwd");
 }

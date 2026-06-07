@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 22:09:29 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/06/07 06:56:28 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/07 17:22:23 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,14 @@ static void	exec_single_builtin(t_shell *shell)
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	setup_child_fds(shell->current_cmd, NULL, -1);
+	if (shell->current_cmd->args && shell->current_cmd->args[0]
+		&& ft_strcmp(shell->current_cmd->args[0], "exit") == 0)
+	{
+		close(saved_stdin);
+		close(saved_stdout);
+		built_in(shell->current_cmd);
+		return ;
+	}
 	built_in(shell->current_cmd);
 	dup2(saved_stdin, STDIN_FILENO);
 	dup2(saved_stdout, STDOUT_FILENO);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 22:51:45 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/06/07 06:15:29 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/07 17:04:32 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,16 @@ static void	free_cmds(t_cmd *cmd)
 		}
 		if (cmd->limiter)
 			free(cmd->limiter);
+		if (cmd->infile != STDIN_FILENO && cmd->infile != -1)
+		{
+			close(cmd->infile);
+			cmd->infile = -1; 
+		}
+		if (cmd->outfile != STDOUT_FILENO && cmd->outfile != -1)
+		{
+			close(cmd->outfile);
+			cmd->outfile = -1;
+		}
 		free(cmd);
 		cmd = tmp;
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 00:09:00 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/06/07 06:49:59 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/07 14:23:45 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	ft_unset(t_shell *shell, t_cmd *cmd)
 		prev = curr;
 		curr = curr->next;
 	}
+	shell->exit_status = 0;
 }
 
 static t_env	*create_env_node(char *key, char *value)
@@ -70,6 +71,7 @@ void	ft_export(t_shell *shell, t_cmd *cmd)
 	if (!cmd->args[1])
 	{
 		ft_env(shell);
+		shell->exit_status = 0;
 		return ;
 	}
 	eq = ft_strchr(cmd->args[1], '=');
@@ -90,5 +92,6 @@ void	ft_export(t_shell *shell, t_cmd *cmd)
 		else
 			add_env_back(shell->env, create_env_node(key, ft_strdup(eq + 1)));
 	}
+	shell->exit_status = 0;
 	shell->env_edited = true;
 }

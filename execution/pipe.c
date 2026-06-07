@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 11:02:04 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/06/07 06:55:11 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/07 17:20:03 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,19 @@ static void	wait_for_children(t_shell *shell, int cmd_count)
 void	setup_child_fds(t_cmd *cmd, int *pipe_fd, int prev_fd)
 {
 	if (cmd->infile > 0)
+	{
 		dup2(cmd->infile, STDIN_FILENO);
+		close(cmd->infile);
+		cmd->infile = -1;
+	}
 	else if (prev_fd != -1)
 		dup2(prev_fd, STDIN_FILENO);
 	if (cmd->outfile > 1)
+	{
 		dup2(cmd->outfile, STDOUT_FILENO);
+		close(cmd->outfile);
+		cmd->outfile = -1;
+	}
 	else if (cmd->next)
 		dup2(pipe_fd[1], STDOUT_FILENO);
 	if (cmd->next)

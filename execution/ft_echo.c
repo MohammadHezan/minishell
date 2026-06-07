@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_echo.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/17 12:02:07 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/05/19 10:43:54 by mohammad-he      ###   ########.fr       */
+/*   Updated: 2026/06/07 14:13:28 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void	ft_echo(t_cmd *cmd)
 			printf(" ");
 		i++;
 	}
+	cmd->shell->exit_status = 0;
 	if (!n_flag)
 		printf("\n");
 }

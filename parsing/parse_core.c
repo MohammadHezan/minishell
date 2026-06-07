@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_core.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 22:50:22 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/15 22:50:23 by mohammad-he      ###   ########.fr       */
+/*   Updated: 2026/06/07 13:00:25 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,11 @@ bool	parse_input(t_shell *shell, char *input)
 {
 	if (!input || !*input)
 		return (false);
+	if (input[0] == '\n')
+	{
+		free(input);
+		return (false);
+	}
 	shell->tokens = tokenize_input(input);
 	if (!shell->tokens)
 		return (false);

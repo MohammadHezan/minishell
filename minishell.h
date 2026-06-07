@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 10:15:06 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/06/07 05:49:05 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/07 14:15:35 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	ft_env(t_shell *shell);
 void	ft_unset(t_shell *shell, t_cmd *cmd);
 void	ft_export(t_shell *shell, t_cmd *cmd);
 void	ft_exit(t_cmd *cmd);
-void	ft_pwd(void);
+void	ft_pwd(t_shell *shell);
 void	ft_cd(t_cmd *cmd);
 void	ft_echo(t_cmd *cmd);
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 10:10:34 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/06/07 06:49:59 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/07 16:49:48 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,19 +48,18 @@ int handle_heredoc(t_shell *shell, char *limiter) {
     return (-1);
   }
   if (pid == 0) {
-    signal(SIGINT, SIG_DFL);
-    close(fd[0]);
+    signal(SIGINT, SIG_DFL); 
     read_heredoc_lines(fd[1], limiter);
     close(fd[1]);
     exit(0);
   }
-  close(fd[1]);
+  close(fd[1]); 
   waitpid(pid, &status, 0);
-  init_signals();
+  init_signals(); 
   if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT) {
     write(1, "\n", 1);
     shell->exit_status = 130;
-    close(fd[0]);
+    close(fd[0]); 
     return (-1);
   }
   if (WIFEXITED(status) && WEXITSTATUS(status) == 130) {
@@ -68,5 +67,5 @@ int handle_heredoc(t_shell *shell, char *limiter) {
     close(fd[0]);
     return (-1);
   }
-  return (fd[0]);
+  return (fd[0]); 
 }
