@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander_core.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 22:52:13 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/15 22:56:01 by mohammad-he      ###   ########.fr       */
+/*   Updated: 2026/06/07 06:51:02 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

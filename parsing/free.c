@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 22:51:45 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/15 22:51:46 by mohammad-he      ###   ########.fr       */
+/*   Updated: 2026/06/07 06:15:29 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

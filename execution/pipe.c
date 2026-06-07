@@ -3,53 +3,130 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 11:02:04 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/19 11:03:57 by mohammad-he      ###   ########.fr       */
+/*   Updated: 2026/06/07 06:55:11 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static void	handle_pipe_child(t_shell *shell, int *pipe_fd, int fd_in)
+static void	wait_for_children(t_shell *shell, int cmd_count)
 {
-	dup2(fd_in, STDIN_FILENO);
-	if (shell->current_cmd->next)
-		dup2(pipe_fd[1], STDOUT_FILENO);
-	close(pipe_fd[0]);
-	close(pipe_fd[1]);
-	child_process(shell, shell->current_cmd);
-	exit(1);
+	int	i;
+	int	status;
+
+	i = 0;
+	while (i < cmd_count)
+	{
+		waitpid(shell->pids[i], &status, 0);
+		if (i == cmd_count - 1)
+		{
+			if (WIFEXITED(status))
+				shell->exit_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+			{
+				shell->exit_status = 128 + WTERMSIG(status);
+				if (WTERMSIG(status) == SIGQUIT)
+					write(1, "Quit (core dumped)\n", 19);
+				else if (WTERMSIG(status) == SIGINT)
+					write(1, "\n", 1);
+			}
+		}
+		i++;
+	}
+	free(shell->pids);
+	shell->pids = NULL;
 }
 
-static void	handle_pipe_parent(t_shell *shell, int *pipe_fd, int *fd_in)
+void	setup_child_fds(t_cmd *cmd, int *pipe_fd, int prev_fd)
 {
-	wait(NULL);
-	close(pipe_fd[1]);
-	if (*fd_in != STDIN_FILENO)
-		close(*fd_in);
-	*fd_in = pipe_fd[0];
-	shell->current_cmd = shell->current_cmd->next;
+	if (cmd->infile > 0)
+		dup2(cmd->infile, STDIN_FILENO);
+	else if (prev_fd != -1)
+		dup2(prev_fd, STDIN_FILENO);
+	if (cmd->outfile > 1)
+		dup2(cmd->outfile, STDOUT_FILENO);
+	else if (cmd->next)
+		dup2(pipe_fd[1], STDOUT_FILENO);
+	if (cmd->next)
+	{
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+	}
+	if (prev_fd != -1)
+		close(prev_fd);
+}
+
+static void	handle_pipe_child(t_shell *shell, t_cmd *cmd, int *pipe_fd,
+		int prev_fd)
+{
+	exec_signals();
+	setup_child_fds(cmd, pipe_fd, prev_fd);
+	if (check_built_in(cmd))
+	{
+		built_in(cmd);
+		exit(0);
+	}
+	child_process(shell, cmd);
+}
+
+static void	handle_pipe_parent(t_cmd *cmd, int *pipe_fd, int *prev_fd)
+{
+	if (*prev_fd != -1)
+		close(*prev_fd);
+	if (cmd->next)
+	{
+		close(pipe_fd[1]);
+		*prev_fd = pipe_fd[0];
+	}
+}
+
+static int	allocate_pids(t_shell *shell)
+{
+	t_cmd	*cmd;
+	int		count;
+
+	count = 0;
+	cmd = shell->current_cmd;
+	while (cmd)
+	{
+		count++;
+		cmd = cmd->next;
+	}
+	shell->pids = malloc(sizeof(pid_t) * count);
+	if (!shell->pids)
+		return (0);
+	return (1);
 }
 
 void	exec_pipe(t_shell *shell)
 {
-	int		pipe_fd[2];
-	pid_t	pid;
-	int		fd_in;
+	t_cmd *cmd;
+	int pipe_fd[2];
+	int prev_fd;
+	int i;
 
-	fd_in = STDIN_FILENO;
-	while (shell->current_cmd)
+	if (!allocate_pids(shell))
+		return ;
+	cmd = shell->current_cmd;
+	prev_fd = -1;
+	i = 0;
+	ignore_signals();
+	while (cmd)
 	{
-		if (pipe(pipe_fd) == -1)
+		if (cmd->next && pipe(pipe_fd) == -1)
 			return ;
-		pid = fork();
-		if (pid == -1)
+		shell->pids[i] = fork();
+		if (shell->pids[i] == -1)
 			return ;
-		if (pid == 0)
-			handle_pipe_child(shell, pipe_fd, fd_in);
-		else
-			handle_pipe_parent(shell, pipe_fd, &fd_in);
+		if (shell->pids[i] == 0)
+			handle_pipe_child(shell, cmd, pipe_fd, prev_fd);
+		handle_pipe_parent(cmd, pipe_fd, &prev_fd);
+		cmd = cmd->next;
+		i++;
 	}
+	wait_for_children(shell, i);
+	init_signals();
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa </var/spool/mail/zaalrafa>        +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/10 10:26:14 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/05/10 10:36:48 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/07 06:49:59 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,29 +28,14 @@ static int	has_path(char *cmd)
 	return (0);
 }
 
-static char	*get_path(char *envp[])
-{
-	int	i;
-
-	i = 0;
-	while (envp[i])
-	{
-		if (ft_strnstr(envp[i], "PATH=", ft_strlen(envp[i]))
-			&& (envp[i][0] == 'P'))
-		{
-			return (envp[i] + 5);
-		}
-		i++;
-	}
-	return (0);
-}
-
-static char	*search_func(char *search_path, char **arr, char *cmd)
+static char	*search_func(char **arr, char *cmd)
 {
 	int		j;
 	char	*tmp;
+	char	*search_path;
 
 	j = 0;
+	search_path = NULL;
 	while (arr[j])
 	{
 		tmp = ft_strjoin(arr[j], "/");
@@ -73,20 +58,15 @@ char	*check_path(t_shell *shell, char *cmd)
 	char	**arr;
 	char	*search_path;
 
-	search_path = NULL;
-	paths = get_path(shell->env_array);
+	paths = get_env_value(shell->env, "PATH");
 	if (!paths)
 		return (NULL);
 	arr = ft_split(paths, ':');
 	if (!arr)
-	{
 		return (NULL);
-	}
-	search_path = search_func(search_path, arr, cmd);
-	if (search_path)
-		return (search_path);
+	search_path = search_func(arr, cmd);
 	free_arr(arr);
-	return (NULL);
+	return (search_path);
 }
 
 char	*cmd_path(t_shell *shell, char *cmd)

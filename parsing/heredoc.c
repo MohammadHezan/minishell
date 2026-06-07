@@ -3,48 +3,70 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 10:10:34 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/19 10:11:28 by mohammad-he      ###   ########.fr       */
+/*   Updated: 2026/06/07 06:49:59 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static void	read_heredoc_lines(int fd, char *limiter)
-{
-	char	*line;
+static void read_heredoc_lines(int fd, char *limiter) {
+  char *line;
 
-	while (1)
-	{
-		line = readline("> ");
-		if (!line)
-		{
-			write(2, "minishell: warning: delimited by EOF\n", 38);
-			break ;
-		}
-		if (ft_strncmp(line, limiter, ft_strlen(limiter) + 1) == 0)
-		{
-			free(line);
-			break ;
-		}
-		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
-		free(line);
-	}
+  while (1) {
+    line = readline("> ");
+    if (!line) {
+      write(2, "minishell: warning: delimited by EOF\n", 38);
+      break;
+    }
+    if (ft_strncmp(line, limiter, ft_strlen(limiter) + 1) == 0) {
+      free(line);
+      break;
+    }
+    write(fd, line, ft_strlen(line));
+    write(fd, "\n", 1);
+    free(line);
+  }
 }
 
-int	handle_heredoc(char *limiter)
-{
-	int	fd[2];
+int handle_heredoc(t_shell *shell, char *limiter) {
+  int fd[2];
+  pid_t pid;
+  int status;
 
-	if (pipe(fd) == -1)
-	{
-		perror("minishell: pipe");
-		return (-1);
-	}
-	read_heredoc_lines(fd[1], limiter);
-	close(fd[1]);
-	return (fd[0]);
+  if (pipe(fd) == -1) {
+    perror("minishell: pipe");
+    return (-1);
+  }
+  signal(SIGINT, SIG_IGN);
+  pid = fork();
+  if (pid == -1) {
+    close(fd[0]);
+    close(fd[1]);
+    return (-1);
+  }
+  if (pid == 0) {
+    signal(SIGINT, SIG_DFL);
+    close(fd[0]);
+    read_heredoc_lines(fd[1], limiter);
+    close(fd[1]);
+    exit(0);
+  }
+  close(fd[1]);
+  waitpid(pid, &status, 0);
+  init_signals();
+  if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT) {
+    write(1, "\n", 1);
+    shell->exit_status = 130;
+    close(fd[0]);
+    return (-1);
+  }
+  if (WIFEXITED(status) && WEXITSTATUS(status) == 130) {
+    shell->exit_status = 130;
+    close(fd[0]);
+    return (-1);
+  }
+  return (fd[0]);
 }

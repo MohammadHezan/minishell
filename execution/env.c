@@ -58,7 +58,7 @@ char	*get_env_value(t_env *env, char *key)
 	curr = env;
 	while (curr)
 	{
-		if (ft_strncmp(curr->key, key, ft_strlen(key)))
+		if (ft_strcmp(curr->key, key) == 0)
 			return (curr->value);
 		curr = curr->next;
 	}
@@ -72,7 +72,7 @@ bool	change_env_value(t_env *env, char *key, char *value)
 	curr = env;
 	while (curr)
 	{
-		if (ft_strncmp(curr->key, key, ft_strlen(key)))
+		if (ft_strcmp(curr->key, key) == 0)
 		{
 			free(curr->value);
 			curr->value = value;
@@ -90,7 +90,7 @@ t_env	*get_env_by_key(t_env *env, char *key)
 	curr = env;
 	while (curr)
 	{
-		if (ft_strncmp(curr->key, key, ft_strlen(key)))
+		if (ft_strcmp(curr->key, key) == 0)
 			return (curr);
 		curr = curr->next;
 	}

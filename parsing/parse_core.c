@@ -26,6 +26,6 @@ bool	parse_input(t_shell *shell, char *input)
 		return (false);
 	}
 	expand_tokens(shell);
-	shell->current_cmd = build_cmd_table(shell->tokens);
+	shell->current_cmd = build_cmd_table(shell, shell->tokens);
 	return (true);
 }

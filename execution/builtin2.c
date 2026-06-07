@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 00:09:00 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/05/19 10:41:46 by mohammad-he      ###   ########.fr       */
+/*   Updated: 2026/06/07 06:49:59 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,11 @@ void	ft_export(t_shell *shell, t_cmd *cmd)
 		free(key);
 	}
 	else
-		add_env_back(shell->env, create_env_node(key, ft_strdup(eq + 1)));
+	{
+		if (!shell->env)
+			shell->env = create_env_node(key, ft_strdup(eq + 1));
+		else
+			add_env_back(shell->env, create_env_node(key, ft_strdup(eq + 1)));
+	}
 	shell->env_edited = true;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_checkers.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zaalrafa </var/spool/mail/zaalrafa>        +#+  +:+       +#+        */
+/*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/10 13:27:40 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/05/10 19:39:22 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/07 06:49:59 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 void	built_in(t_cmd *cmd)
 {
+	if (!cmd || !cmd->args || !cmd->args[0])
+		return ;
 	if (ft_strncmp(cmd->args[0], "echo", 5) == 0)
 		ft_echo(cmd);
 	else if (ft_strncmp(cmd->args[0], "cd", 3) == 0)
@@ -27,11 +29,13 @@ void	built_in(t_cmd *cmd)
 	else if (ft_strncmp(cmd[0].args[0], "env", 4) == 0)
 		ft_env(cmd->shell);
 	else if (ft_strncmp(cmd[0].args[0], "exit", 5) == 0)
-		ft_exit(cmd->shell);
+		ft_exit(cmd);
 }
 
 int	check_built_in(t_cmd *cmd)
 {
+	if (!cmd || !cmd->args || !cmd->args[0])
+		return (0);
 	if (ft_strncmp(cmd->args[0], "echo", 5) == 0)
 		return (1);
 	else if (ft_strncmp(cmd->args[0], "cd", 3) == 0)

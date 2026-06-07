@@ -24,7 +24,10 @@ static void	open_infile(t_cmd *cmd, char *file)
 		close(cmd->infile);
 	cmd->infile = open(file, O_RDONLY);
 	if (cmd->infile == -1)
+	{
 		print_redir_err(file);
+		cmd->shell->exit_status = 1;
+	}
 }
 
 static void	open_outfile(t_cmd *cmd, char *file, t_token_type type)
@@ -42,7 +45,10 @@ static void	open_outfile(t_cmd *cmd, char *file, t_token_type type)
 		cmd->append = true;
 	}
 	if (cmd->outfile == -1)
+	{
 		print_redir_err(file);
+		cmd->shell->exit_status = 1;
+	}
 }
 
 static void	open_file(t_cmd *cmd, char *file, t_token_type type)
@@ -69,7 +75,7 @@ void	handle_redirection(t_cmd *cmd, t_token **tok)
 	{
 		if (cmd->infile != STDIN_FILENO && cmd->infile != -1)
 			close(cmd->infile);
-		cmd->infile = handle_heredoc(file);
+		cmd->infile = handle_heredoc(cmd->shell, file);
 	}
 	else
 		open_file(cmd, file, type);

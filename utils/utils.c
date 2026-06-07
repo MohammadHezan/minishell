@@ -12,10 +12,10 @@
 
 #include "../minishell.h"
 
-void	error_message(char *str, int errno)
+void	error_message(char *str, int exit_code)
 {
 	printf("%s\n", str);
-	exit(errno);
+	exit(exit_code);
 }
 
 int	count_env(t_env *env)

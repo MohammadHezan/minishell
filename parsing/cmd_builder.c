@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-t_cmd	*create_cmd_node(void)
+t_cmd	*create_cmd_node(t_shell *shell)
 {
 	t_cmd	*node;
 
@@ -23,8 +23,10 @@ t_cmd	*create_cmd_node(void)
 	node->infile = STDIN_FILENO;
 	node->outfile = STDOUT_FILENO;
 	node->append = false;
+	node->pipe = false;
 	node->limiter = NULL;
 	node->next = NULL;
+	node->shell = shell;
 	return (node);
 }
 
@@ -85,7 +87,7 @@ static void	fill_args(t_cmd *cmd, t_token **tok)
 	cmd->args[i] = NULL;
 }
 
-t_cmd	*build_cmd_table(t_token *tokens)
+t_cmd	*build_cmd_table(t_shell *shell, t_token *tokens)
 {
 	t_cmd	*head;
 	t_cmd	*curr;
@@ -95,7 +97,7 @@ t_cmd	*build_cmd_table(t_token *tokens)
 	tok = tokens;
 	while (tok)
 	{
-		curr = create_cmd_node();
+		curr = create_cmd_node(shell);
 		fill_args(curr, &tok);
 		add_cmd(&head, curr);
 		if (tok && tok->type == PIPE)
