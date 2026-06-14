@@ -6,7 +6,7 @@
 /*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 22:50:33 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/06/14 12:42:09 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/14 16:52:44 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,10 @@ static int	process_input_loop(t_shell *shell)
 		g_sig_status = 0;
 	}
 	if (!input)
+	{
+		shell->exit_status = 0;
 		return (0);
+	}
 	if (*input)
 		add_history(input);
 	if (parse_input(shell, input))

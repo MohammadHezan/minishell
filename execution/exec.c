@@ -6,7 +6,7 @@
 /*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 22:09:29 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/06/14 11:50:00 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/14 20:01:36 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ void	child_process(t_shell *shell, t_cmd *cmd)
 	check_directory(cmd->args[0], cmd_pt);
 	if (shell->env_edited)
 		shell->env_array = rebuild_env(shell);
+	close(shell->stdin_backup);
+	close(shell->stdout_backup);
 	execve(cmd_pt, cmd->args, shell->env_array);
 	perror(cmd->args[0]);
 	exit(126);
