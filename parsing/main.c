@@ -6,13 +6,13 @@
 /*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 22:50:33 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/06/07 12:43:06 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/14 12:42:09 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	init_signals(void);
+void		init_signals(void);
 
 void	init_shell(t_shell *shell, char **envp)
 {
@@ -54,31 +54,39 @@ void	free_shell(t_shell *shell)
 		free_arr(shell->env_array);
 }
 
+static int	process_input_loop(t_shell *shell)
+{
+	char	*input;
+
+	init_signals();
+	input = readline("minishell$ ");
+	if (g_sig_status == SIGINT)
+	{
+		shell->exit_status = 130;
+		g_sig_status = 0;
+	}
+	if (!input)
+		return (0);
+	if (*input)
+		add_history(input);
+	if (parse_input(shell, input))
+		exec(shell);
+	free_cycle(shell);
+	free(input);
+	return (1);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
-	char	*input;
 
 	(void)argc;
 	(void)argv;
 	init_shell(&shell, envp);
 	while (1)
 	{
-		init_signals();
-		input = readline("minishell$ ");
-		if (g_sig_status == SIGINT)
-		{
-			shell.exit_status = 130;
-			g_sig_status = 0;
-		}
-		if (!input)
+		if (!process_input_loop(&shell))
 			break ;
-		if (*input)
-			add_history(input);
-		if (parse_input(&shell, input))
-			exec(&shell);
-		free_cycle(&shell);
-		free(input);
 	}
 	free_shell(&shell);
 	write(1, "exit\n", 5);

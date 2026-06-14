@@ -78,7 +78,6 @@ static void	fill_args(t_cmd *cmd, t_token **tok)
 	{
 		if ((*tok)->type == CMD)
 		{
-			/* Skip empty-string tokens from word-splitting of whitespace-only vars */
 			if ((*tok)->value && (*tok)->value[0] != '\0')
 				cmd->args[i++] = ft_strdup((*tok)->value);
 			*tok = (*tok)->next;
@@ -88,7 +87,6 @@ static void	fill_args(t_cmd *cmd, t_token **tok)
 	}
 	cmd->args[i] = NULL;
 }
-
 
 t_cmd	*build_cmd_table(t_shell *shell, t_token *tokens)
 {

@@ -6,66 +6,49 @@
 /*   By: zaalrafa <zaalrafa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 00:09:00 by zaalrafa          #+#    #+#             */
-/*   Updated: 2026/06/07 14:23:45 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/14 11:46:49 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_unset(t_shell *shell, t_cmd *cmd)
+static void	unset_one(t_shell *shell, char *key)
 {
 	t_env	*curr;
 	t_env	*prev;
-	int		i;
+
+	curr = shell->env;
+	prev = NULL;
+	while (curr)
+	{
+		if (ft_strcmp(curr->key, key) == 0)
+		{
+			if (prev)
+				prev->next = curr->next;
+			else
+				shell->env = curr->next;
+			free_env_node(curr);
+			shell->env_edited = true;
+			return ;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
+}
+
+void	ft_unset(t_shell *shell, t_cmd *cmd)
+{
+	int	i;
 
 	if (!cmd->args[1])
 		return ;
 	i = 1;
 	while (cmd->args[i])
 	{
-		curr = shell->env;
-		prev = NULL;
-		while (curr)
-		{
-			if (ft_strcmp(curr->key, cmd->args[i]) == 0)
-			{
-				if (prev)
-					prev->next = curr->next;
-				else
-					shell->env = curr->next;
-				free_env_node(curr);
-				shell->env_edited = true;
-				break ;
-			}
-			prev = curr;
-			curr = curr->next;
-		}
+		unset_one(shell, cmd->args[i]);
 		i++;
 	}
 	shell->exit_status = 0;
-}
-
-static t_env	*create_env_node(char *key, char *value)
-{
-	t_env	*node;
-
-	node = malloc(sizeof(t_env));
-	node->key = key;
-	node->value = value;
-	node->next = NULL;
-	return (node);
-}
-
-static void	add_env_back(t_env *env, t_env *new_node)
-{
-	t_env	*curr;
-
-	curr = env;
-	while (curr->next)
-	{
-		curr = curr->next;
-	}
-	curr->next = new_node;
 }
 
 static int	is_valid_identifier(char *name)
@@ -86,58 +69,34 @@ static int	is_valid_identifier(char *name)
 	return (1);
 }
 
-static void	export_one(t_shell *shell, char *arg)
+static int	check_export_arg(t_shell *shell, char *arg)
 {
-	t_env	*node;
 	char	*eq;
 	char	*key;
+	int		len;
 
 	eq = ft_strchr(arg, '=');
-	if (!eq)
-	{
-		/* export VAR without value: mark as exported (add to env if not present,
-		   but without a value — matches bash where it appears in `export -p`
-		   but not in `env`). We skip if already present. */
-		if (!get_env_by_key(shell->env, arg))
-		{
-			node = malloc(sizeof(t_env));
-			if (!node)
-				return ;
-			node->key = ft_strdup(arg);
-			node->value = NULL;
-			node->next = NULL;
-			if (!shell->env)
-				shell->env = node;
-			else
-				add_env_back(shell->env, node);
-			shell->env_edited = true;
-		}
-		return ;
-	}
-	key = ft_substr(arg, 0, eq - arg);
-	node = get_env_by_key(shell->env, key);
-	if (node)
-	{
-		free(node->value);
-		node->value = ft_strdup(eq + 1);
-		free(key);
-	}
+	if (eq)
+		len = eq - arg;
 	else
+		len = ft_strlen(arg);
+	key = ft_substr(arg, 0, len);
+	if (!is_valid_identifier(key))
 	{
-		if (!shell->env)
-			shell->env = create_env_node(key, ft_strdup(eq + 1));
-		else
-			add_env_back(shell->env, create_env_node(key, ft_strdup(eq + 1)));
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putendl_fd("': not a valid identifier", 2);
+		shell->exit_status = 1;
+		free(key);
+		return (0);
 	}
-	shell->env_edited = true;
+	free(key);
+	return (1);
 }
 
 void	ft_export(t_shell *shell, t_cmd *cmd)
 {
-	int		i;
-	char	*eq;
-	char	*key;
-	int		len;
+	int	i;
 
 	if (!cmd->args[1])
 	{
@@ -149,24 +108,8 @@ void	ft_export(t_shell *shell, t_cmd *cmd)
 	i = 1;
 	while (cmd->args[i])
 	{
-		eq = ft_strchr(cmd->args[i], '=');
-		if (eq)
-			len = eq - cmd->args[i];
-		else
-			len = ft_strlen(cmd->args[i]);
-		key = ft_substr(cmd->args[i], 0, len);
-		if (!is_valid_identifier(key))
-		{
-			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(cmd->args[i], 2);
-			ft_putendl_fd("': not a valid identifier", 2);
-			shell->exit_status = 1;
-			free(key);
-			i++;
-			continue ;
-		}
-		free(key);
-		export_one(shell, cmd->args[i]);
+		if (check_export_arg(shell, cmd->args[i]))
+			export_one(shell, cmd->args[i]);
 		i++;
 	}
 }

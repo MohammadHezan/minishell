@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-int	g_sig_status = 0;
+int			g_sig_status = 0;
 
 static void	handle_sigint(int sig)
 {

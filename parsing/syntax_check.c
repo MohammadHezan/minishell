@@ -14,8 +14,8 @@
 
 static bool	is_redirection(t_token_type type)
 {
-	if (type == REDIRECT_IN || type == REDIRECT_OUT
-		|| type == TRUNCATE || type == APPEND || type == HEREDOC)
+	if (type == REDIRECT_IN || type == REDIRECT_OUT || type == TRUNCATE
+		|| type == APPEND || type == HEREDOC)
 		return (true);
 	return (false);
 }
@@ -68,7 +68,8 @@ bool	check_syntax(t_token *tokens)
 	}
 	if (!check_redir_syntax(tokens))
 	{
-		ft_putendl_fd("minishell: syntax error near unexpected token `newline'", 2);
+		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
+			2);
 		return (false);
 	}
 	return (true);

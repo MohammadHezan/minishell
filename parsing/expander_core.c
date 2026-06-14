@@ -6,7 +6,7 @@
 /*   By: zaalrafa <zaalrafa@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 22:52:13 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/06/07 06:51:02 by zaalrafa         ###   ########.fr       */
+/*   Updated: 2026/06/14 12:39:09 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,12 @@ static char	*extract_var(char *str, int *i, t_shell *shell)
 static char	*process_str(char *str, t_shell *shell)
 {
 	char	*res;
-	char	tmp[2];
 	int		i;
 	int		state;
 
 	res = ft_strdup("");
 	i = -1;
 	state = 0;
-	tmp[1] = '\0';
 	while (str[++i])
 	{
 		if (str[i] == '\'' && state != 2)
@@ -49,40 +47,34 @@ static char	*process_str(char *str, t_shell *shell)
 		else if (str[i] == '$' && state != 1)
 			res = join_and_free(res, extract_var(str, &i, shell));
 		else
-		{
-			tmp[0] = str[i];
-			res = join_and_free(res, ft_strdup(tmp));
-		}
+			res = append_char(res, str[i]);
 	}
 	return (res);
 }
 
-/* Returns 1 if str contains any quotes */
-static int	has_quotes(char *str)
+static void	insert_split_tokens(t_token *last, char **words)
 {
-	int	i;
+	t_token	*new_tok;
+	int		i;
 
-	if (!str)
-		return (0);
-	i = 0;
-	while (str[i])
+	i = 1;
+	while (words[i])
 	{
-		if (str[i] == '\'' || str[i] == '"')
-			return (1);
+		new_tok = create_tok(words[i], CMD, 0);
+		if (new_tok)
+		{
+			new_tok->next = last->next;
+			last->next = new_tok;
+			last = new_tok;
+		}
 		i++;
 	}
-	return (0);
 }
 
-/* Split a string by whitespace into new CMD tokens inserted after *tok_ptr.
-   The original token is replaced by the first word; if empty, removed. */
 static void	word_split_token(t_token **tok_ptr)
 {
 	t_token	*tok;
-	t_token	*new_tok;
-	t_token	*last;
 	char	**words;
-	int		i;
 
 	tok = *tok_ptr;
 	words = ft_split(tok->value, ' ');
@@ -97,19 +89,7 @@ static void	word_split_token(t_token **tok_ptr)
 	}
 	free(tok->value);
 	tok->value = ft_strdup(words[0]);
-	last = tok;
-	i = 1;
-	while (words[i])
-	{
-		new_tok = create_tok(words[i], CMD, 0);
-		if (new_tok)
-		{
-			new_tok->next = last->next;
-			last->next = new_tok;
-			last = new_tok;
-		}
-		i++;
-	}
+	insert_split_tokens(tok, words);
 	free_arr(words);
 }
 
@@ -128,7 +108,6 @@ void	expand_tokens(t_shell *shell)
 			new_val = process_str(tok->value, shell);
 			free(tok->value);
 			tok->value = new_val;
-			/* Word-split only if the original had no quotes */
 			if (!was_quoted && ft_strchr(tok->value, ' '))
 				word_split_token(&tok);
 		}

@@ -21,12 +21,18 @@ PARSING_SRC = parsing/lexer_utils.c \
 
 EXECUTION_SRC = execution/builtin.c \
                 execution/builtin2.c \
+                execution/builtin3.c \
+                execution/builtin_utils.c \
+                execution/export_utils.c \
                 execution/builtin_checkers.c \
                 execution/env.c \
                 execution/exec.c \
+                execution/exec_utils.c \
                 execution/path.c \
                 execution/ft_echo.c \
-                execution/pipe.c
+                execution/pipe.c \
+                execution/pipe_helper.c
+
 
 UTILS         = utils/free.c \
                 utils/utils.c 

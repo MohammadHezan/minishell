@@ -6,7 +6,7 @@
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 22:51:10 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/15 22:51:12 by mohammad-he      ###   ########.fr       */
+/*   Updated: 2026/06/14 12:53:06 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ static int	get_word_len(char *in, int i)
 	while (in[i + len])
 	{
 		if (!q && (in[i + len] == ' ' || in[i + len] == '\t'
-				|| in[i + len] == '|' || in[i + len] == '<'
-				|| in[i + len] == '>'))
+				|| in[i + len] == '|'
+				|| in[i + len] == '<' || in[i + len] == '>'))
 			break ;
 		if ((in[i + len] == '\'' || in[i + len] == '\"') && !q)
 			q = in[i + len];

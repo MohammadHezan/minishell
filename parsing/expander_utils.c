@@ -6,7 +6,7 @@
 /*   By: mohammad-hezan <mohammad-hezan@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 22:52:07 by mohammad-he       #+#    #+#             */
-/*   Updated: 2026/05/15 22:52:08 by mohammad-he      ###   ########.fr       */
+/*   Updated: 2026/06/14 12:52:39 by zaalrafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,29 @@ char	*join_and_free(char *s1, char *s2)
 	free(s1);
 	free(s2);
 	return (res);
+}
+
+int	has_quotes(char *str)
+{
+	int	i;
+
+	if (!str)
+		return (0);
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '"')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+char	*append_char(char *res, char c)
+{
+	char	tmp[2];
+
+	tmp[0] = c;
+	tmp[1] = '\0';
+	return (join_and_free(res, ft_strdup(tmp)));
 }
