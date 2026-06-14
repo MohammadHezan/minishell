@@ -27,7 +27,7 @@ bool	parse_input(t_shell *shell, char *input)
 	if (!check_syntax(shell->tokens))
 	{
 		free_cycle(shell);
-		shell->exit_status = 258;
+		shell->exit_status = 2;
 		return (false);
 	}
 	expand_tokens(shell);

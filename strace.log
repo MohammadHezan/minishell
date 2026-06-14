@@ -1,0 +1,59 @@
+write(1, "minishell$ ", 11minishell$ )             = 11
+write(1, "\r<ho | echo | echo | echo | echo"..., 53<ho | echo | echo | echo | echo | echo | echo | echo) = 53
+write(1, "\n", 1
+)                       = 1
+strace: Process 26749 attached
+strace: Process 26750 attached
+[pid 26749] write(1, "\n", 1)           = 1
+strace: Process 26751 attached
+[pid 26749] +++ exited with 0 +++
+[pid 26748] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26749, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+[pid 26750] write(1, "\n", 1 <unfinished ...>
+[pid 26751] write(1, "\n", 1)           = 1
+strace: Process 26752 attached
+[pid 26750] <... write resumed>)        = 1
+[pid 26750] +++ exited with 0 +++
+[pid 26748] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26750, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+[pid 26751] +++ exited with 0 +++
+[pid 26748] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26751, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+strace: Process 26753 attached
+strace: Process 26754 attached
+[pid 26753] write(1, "\n", 1 <unfinished ...>
+[pid 26752] write(1, "\n", 1 <unfinished ...>
+[pid 26753] <... write resumed>)        = 1
+[pid 26752] <... write resumed>)        = 1
+[pid 26753] +++ exited with 0 +++
+[pid 26748] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26753, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+[pid 26752] +++ exited with 0 +++
+[pid 26748] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26752, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+strace: Process 26755 attached
+[pid 26754] write(1, "\n", 1)           = 1
+[pid 26754] +++ exited with 0 +++
+[pid 26748] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26754, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+[pid 26755] write(1, "\n", 1)           = 1
+strace: Process 26756 attached
+[pid 26755] +++ exited with 0 +++
+[pid 26748] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26755, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+strace: Process 26757 attached
+strace: Process 26758 attached
+[pid 26756] write(1, "\n", 1)           = 1
+[pid 26756] +++ exited with 0 +++
+[pid 26748] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26756, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+strace: Process 26759 attached
+[pid 26757] write(1, "\n", 1)           = 1
+[pid 26758] write(1, "\n", 1)           = 1
+[pid 26758] +++ exited with 0 +++
+[pid 26757] +++ exited with 0 +++
+strace: Process 26760 attached
+[pid 26748] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26758, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+[pid 26759] write(1, "\n", 1)           = 1
+[pid 26760] write(1, "\n", 1
+)           = 1
+[pid 26759] +++ exited with 0 +++
+[pid 26748] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26759, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+[pid 26760] +++ exited with 0 +++
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=26760, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+write(1, "minishell$ ", 11minishell$ )             = 11
+write(1, "exit\n", 5exit
+)                   = 5
++++ exited with 0 +++

@@ -75,7 +75,8 @@ static void	handle_pipe_child(t_shell *shell, t_cmd *cmd, int *pipe_fd,
 	if (check_built_in(cmd))
 	{
 		built_in(cmd);
-		exit(0);
+		fflush(stdout);
+		_exit(cmd->shell->exit_status);
 	}
 	child_process(shell, cmd);
 }
@@ -122,6 +123,7 @@ void	exec_pipe(t_shell *shell)
 	prev_fd = -1;
 	i = 0;
 	ignore_signals();
+	fflush(stdout);
 	while (cmd)
 	{
 		if (cmd->next && pipe(pipe_fd) == -1)

@@ -23,6 +23,11 @@ static void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
+static void	handle_sigquit(int sig)
+{
+	(void)sig;
+}
+
 void	init_signals(void)
 {
 	struct termios	term;
@@ -31,7 +36,7 @@ void	init_signals(void)
 	term.c_lflag &= ~ECHOCTL;
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
 	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, SIG_IGN);
+	signal(SIGQUIT, handle_sigquit);
 }
 
 void	ignore_signals(void)

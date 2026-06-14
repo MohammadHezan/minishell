@@ -63,12 +63,12 @@ bool	check_syntax(t_token *tokens)
 		return (false);
 	if (!check_pipe_syntax(tokens))
 	{
-		printf("minishell: syntax error near unexpected token `|'\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token `|'", 2);
 		return (false);
 	}
 	if (!check_redir_syntax(tokens))
 	{
-		printf("minishell: syntax error near unexpected token `newline'\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token `newline'", 2);
 		return (false);
 	}
 	return (true);

@@ -30,7 +30,13 @@ void	child_process(t_shell *shell, t_cmd *cmd)
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		exit(127);
 	}
-	if (stat(cmd_pt, &path_stat) == 0 && S_ISDIR(path_stat.st_mode))
+	if (stat(cmd_pt, &path_stat) != 0)
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		perror(cmd->args[0]);
+		exit(126);
+	}
+	if (S_ISDIR(path_stat.st_mode))
 	{
 		ft_putstr_fd(cmd->args[0], STDERR_FILENO);
 		ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
@@ -55,6 +61,7 @@ void	exec_external(t_shell *shell)
 		return ;
 	}
 	ignore_signals();
+	fflush(stdout);
 	pid = fork();
 	if (pid == -1)
 		error_message("fork", 1);
@@ -101,6 +108,7 @@ static void	exec_single_builtin(t_shell *shell)
 		return ;
 	}
 	built_in(shell->current_cmd);
+	fflush(stdout);
 	dup2(saved_stdin, STDIN_FILENO);
 	dup2(saved_stdout, STDOUT_FILENO);
 	close(saved_stdin);

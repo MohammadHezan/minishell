@@ -74,11 +74,7 @@ char	*cmd_path(t_shell *shell, char *cmd)
 	char	*path;
 
 	if (has_path(cmd))
-	{
-		if (access(cmd, F_OK | X_OK) == -1)
-			return (NULL);
 		path = cmd;
-	}
 	else
 		path = check_path(shell, cmd);
 	return (path);

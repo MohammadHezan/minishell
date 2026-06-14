@@ -66,6 +66,11 @@ int	main(int argc, char **argv, char **envp)
 	{
 		init_signals();
 		input = readline("minishell$ ");
+		if (g_sig_status == SIGINT)
+		{
+			shell.exit_status = 130;
+			g_sig_status = 0;
+		}
 		if (!input)
 			break ;
 		if (*input)

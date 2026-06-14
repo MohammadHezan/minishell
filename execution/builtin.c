@@ -27,7 +27,8 @@ void	ft_env(t_shell *shell)
 	}
 	while (shell->env_array[i])
 	{
-		printf("%s\n", shell->env_array[i]);
+		if (ft_strchr(shell->env_array[i], '='))
+			printf("%s\n", shell->env_array[i]);
 		i++;
 	}
 	shell->exit_status = 0;
@@ -37,6 +38,7 @@ void	ft_cd(t_cmd *cmd)
 {
 	char	*path;
 	char	cwd[4096];
+	char	*oldpwd;
 
 	if (cmd->args[1] != NULL && cmd->args[2] != NULL)
 	{
@@ -44,17 +46,35 @@ void	ft_cd(t_cmd *cmd)
 		cmd->shell->exit_status = 1;
 		return ;
 	}
+	if (getcwd(cwd, sizeof(cwd)))
+		oldpwd = ft_strdup(cwd);
+	else
+		oldpwd = ft_strdup("");
 	if (cmd->args[1] == NULL)
 		path = get_env_value(cmd->shell->env, "HOME");
+	else if (ft_strcmp(cmd->args[1], "-") == 0)
+	{
+		path = get_env_value(cmd->shell->env, "OLDPWD");
+		if (!path)
+		{
+			ft_putendl_fd("minishell: cd: OLDPWD not set", 2);
+			free(oldpwd);
+			cmd->shell->exit_status = 1;
+			return ;
+		}
+		ft_putendl_fd(path, 1);
+	}
 	else
 		path = cmd->args[1];
 	if (chdir(path) != 0)
 	{
 		perror("minishell: cd");
+		free(oldpwd);
 		cmd->shell->exit_status = 1;
 		return ;
 	}
 	cmd->shell->exit_status = 0;
+	change_env_value(cmd->shell->env, "OLDPWD", oldpwd);
 	if (getcwd(cwd, sizeof(cwd)))
 		change_env_value(cmd->shell->env, "PWD", ft_strdup(cwd));
 }
@@ -154,11 +174,11 @@ void	ft_exit(t_cmd *cmd)
 	code = ft_atoll(arg);
 	if (cmd->args[i + 1])
 	{
-		ft_putendl_fd("minishell: exit too many arguments", 2);
+		ft_putendl_fd("minishell: exit: too many arguments", 2);
 		cmd->shell->exit_status = 1;
 		return ;
 	}
-		ft_putendl_fd("exit", 2);
+	ft_putendl_fd("exit", 2);
 	free_shell(cmd->shell);
 	exit((unsigned char)code);
 }

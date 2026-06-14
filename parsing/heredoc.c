@@ -18,7 +18,7 @@ static void read_heredoc_lines(int fd, char *limiter) {
   while (1) {
     line = readline("> ");
     if (!line) {
-      write(2, "minishell: warning: delimited by EOF\n", 38);
+      write(2, "minishell: warning: here-document delimited by end-of-file\n", 60);
       break;
     }
     if (ft_strncmp(line, limiter, ft_strlen(limiter) + 1) == 0) {
