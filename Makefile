@@ -14,6 +14,7 @@ PARSING_SRC = parsing/lexer_utils.c \
               parsing/heredoc.c \
               parsing/expander_utils.c \
               parsing/expander_core.c \
+              parsing/expander_split.c \
               parsing/parse_core.c \
               parsing/exec_mock.c \
               parsing/signals.c \
@@ -24,6 +25,7 @@ EXECUTION_SRC = execution/builtin.c \
                 execution/builtin3.c \
                 execution/builtin_utils.c \
                 execution/export_utils.c \
+                execution/export_print.c \
                 execution/builtin_checkers.c \
                 execution/env.c \
                 execution/exec.c \

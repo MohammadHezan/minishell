@@ -15,13 +15,11 @@
 char	*get_env_val(t_shell *shell, char *key)
 {
 	t_env	*env;
-	char	*exit_stat;
 
 	if (ft_strncmp(key, "?", 2) == 0)
-	{
-		exit_stat = ft_itoa(shell->exit_status);
-		return (exit_stat);
-	}
+		return (ft_itoa(shell->exit_status));
+	if (ft_strncmp(key, "$", 2) == 0)
+		return (ft_itoa(getpid()));
 	env = shell->env;
 	while (env)
 	{
@@ -36,9 +34,11 @@ int	get_var_len(char *str)
 {
 	int	i;
 
-	i = 0;
-	if (str[i] == '?')
+	if (str[0] == '?' || str[0] == '$')
 		return (1);
+	if (ft_isdigit(str[0]))
+		return (1);
+	i = 0;
 	while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
 		i++;
 	return (i);

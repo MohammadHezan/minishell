@@ -28,13 +28,15 @@ void	child_process(t_shell *shell, t_cmd *cmd)
 	char	*cmd_pt;
 
 	cmd_pt = get_valid_cmd_path(shell, cmd);
-	check_directory(cmd->args[0], cmd_pt);
+	check_directory(shell, cmd->args[0], cmd_pt);
 	if (shell->env_edited)
 		shell->env_array = rebuild_env(shell);
 	close(shell->stdin_backup);
 	close(shell->stdout_backup);
 	execve(cmd_pt, cmd->args, shell->env_array);
 	perror(cmd->args[0]);
+	free(cmd_pt);
+	free_shell(shell);
 	exit(126);
 }
 
@@ -49,7 +51,12 @@ void	exec_external(t_shell *shell)
 	fflush(stdout);
 	pid = fork();
 	if (pid == -1)
-		error_message("fork", 1);
+	{
+		perror("minishell: fork");
+		shell->exit_status = 1;
+		init_signals();
+		return ;
+	}
 	if (pid == 0)
 		run_fork_child(shell);
 	waitpid(pid, &status, 0);
@@ -64,16 +71,16 @@ static void	exec_single_builtin(t_shell *shell)
 
 	if (check_invalid_fds(shell))
 		return ;
-	saved_stdin = dup(STDIN_FILENO);
-	saved_stdout = dup(STDOUT_FILENO);
-	setup_child_fds(shell->current_cmd, NULL, -1);
 	if (shell->current_cmd->args && shell->current_cmd->args[0]
 		&& ft_strcmp(shell->current_cmd->args[0], "exit") == 0)
 	{
-		restore_fds(saved_stdin, saved_stdout);
+		setup_child_fds(shell->current_cmd, NULL, -1);
 		built_in(shell->current_cmd);
 		return ;
 	}
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	setup_child_fds(shell->current_cmd, NULL, -1);
 	built_in(shell->current_cmd);
 	fflush(stdout);
 	restore_fds(saved_stdin, saved_stdout);

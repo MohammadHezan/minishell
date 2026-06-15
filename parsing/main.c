@@ -52,6 +52,8 @@ void	free_shell(t_shell *shell)
 	close(shell->stdout_backup);
 	if (shell->env_array)
 		free_arr(shell->env_array);
+	if (shell->pids)
+		free(shell->pids);
 }
 
 static int	process_input_loop(t_shell *shell)
@@ -92,6 +94,5 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 	}
 	free_shell(&shell);
-	write(1, "exit\n", 5);
 	return (shell.exit_status);
 }

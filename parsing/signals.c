@@ -17,6 +17,8 @@ int			g_sig_status = 0;
 static void	handle_sigint(int sig)
 {
 	g_sig_status = sig;
+	if (rl_event_hook)
+		return ;
 	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
@@ -27,33 +29,40 @@ static void	handle_sigquit(int sig)
 {
 	(void)sig;
 	rl_on_new_line();
-    rl_redisplay();
+	rl_redisplay();
 }
 
 void	init_signals(void)
 {
 	struct termios	term;
 
-	tcgetattr(STDIN_FILENO, &term);
-	term.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	if (isatty(STDIN_FILENO))
+	{
+		tcgetattr(STDIN_FILENO, &term);
+		term.c_lflag &= ~ECHOCTL;
+		tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	}
 	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, handle_sigquit);
 }
 
-void	ignore_signals(void)
+int	heredoc_event_hook(void)
 {
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
+	if (g_sig_status == SIGINT)
+		rl_done = 1;
+	return (0);
 }
 
 void	exec_signals(void)
 {
 	struct termios	term;
 
-	tcgetattr(STDIN_FILENO, &term);
-	term.c_lflag |= ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	if (isatty(STDIN_FILENO))
+	{
+		tcgetattr(STDIN_FILENO, &term);
+		term.c_lflag |= ECHOCTL;
+		tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	}
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 }

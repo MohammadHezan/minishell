@@ -21,7 +21,10 @@ static char	*extract_var(char *str, int *i, t_shell *shell)
 	(*i)++;
 	len = get_var_len(str + *i);
 	if (len == 0)
+	{
+		(*i)--;
 		return (ft_strdup("$"));
+	}
 	key = ft_substr(str, *i, len);
 	val = get_env_val(shell, key);
 	free(key);
@@ -52,65 +55,55 @@ static char	*process_str(char *str, t_shell *shell)
 	return (res);
 }
 
-static void	insert_split_tokens(t_token *last, char **words)
+char	*expand_heredoc_line(char *str, t_shell *shell)
 {
-	t_token	*new_tok;
+	char	*res;
 	int		i;
 
-	i = 1;
-	while (words[i])
+	res = ft_strdup("");
+	i = -1;
+	while (str[++i])
 	{
-		new_tok = create_tok(words[i], CMD, 0);
-		if (new_tok)
-		{
-			new_tok->next = last->next;
-			last->next = new_tok;
-			last = new_tok;
-		}
-		i++;
+		if (str[i] == '$')
+			res = join_and_free(res, extract_var(str, &i, shell));
+		else
+			res = append_char(res, str[i]);
 	}
+	free(str);
+	return (res);
 }
 
-static void	word_split_token(t_token **tok_ptr)
+static void	expand_cmd_token(t_token *tok, t_shell *shell)
 {
-	t_token	*tok;
-	char	**words;
+	int		was_quoted;
+	char	*new_val;
 
-	tok = *tok_ptr;
-	words = ft_split(tok->value, ' ');
-	if (!words)
-		return ;
-	if (!words[0])
-	{
-		free(tok->value);
-		tok->value = ft_strdup("");
-		free_arr(words);
-		return ;
-	}
+	was_quoted = has_quotes(tok->value);
+	new_val = process_str(tok->value, shell);
 	free(tok->value);
-	tok->value = ft_strdup(words[0]);
-	insert_split_tokens(tok, words);
-	free_arr(words);
+	tok->value = new_val;
+	if (!was_quoted && ft_strchr(tok->value, ' '))
+		word_split_token(&tok);
 }
 
 void	expand_tokens(t_shell *shell)
 {
 	t_token	*tok;
 	char	*new_val;
-	int		was_quoted;
 
 	tok = shell->tokens;
 	while (tok)
 	{
-		if (tok->type == CMD)
+		if (tok->type == HEREDOC && tok->next && tok->next->type == CMD)
 		{
-			was_quoted = has_quotes(tok->value);
-			new_val = process_str(tok->value, shell);
-			free(tok->value);
-			tok->value = new_val;
-			if (!was_quoted && ft_strchr(tok->value, ' '))
-				word_split_token(&tok);
+			tok->next->quote_type = has_quotes(tok->next->value);
+			new_val = strip_quotes(tok->next->value);
+			free(tok->next->value);
+			tok->next->value = new_val;
+			tok = tok->next;
 		}
+		else if (tok->type == CMD)
+			expand_cmd_token(tok, shell);
 		tok = tok->next;
 	}
 }

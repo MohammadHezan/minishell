@@ -49,13 +49,22 @@ void	init_pipe_vars(t_cmd **cmd, t_shell *shell, int *prev_fd, int *i)
 static void	handle_pipe_child(t_shell *shell, t_cmd *cmd, int *pipe_fd,
 		int prev_fd)
 {
+	int	exit_code;
+
 	exec_signals();
+	if (cmd->infile == -1 || cmd->outfile == -1)
+	{
+		free_shell(shell);
+		_exit(1);
+	}
 	setup_child_fds(cmd, pipe_fd, prev_fd);
 	if (check_built_in(cmd))
 	{
 		built_in(cmd);
 		fflush(stdout);
-		_exit(cmd->shell->exit_status);
+		exit_code = cmd->shell->exit_status;
+		free_shell(shell);
+		_exit(exit_code);
 	}
 	child_process(shell, cmd);
 }
@@ -68,7 +77,11 @@ int	fork_pipe_child(t_shell *shell, t_cmd *cmd, int *pipe_fd, int prev_fd)
 		return (-1);
 	pid = fork();
 	if (pid == -1)
+	{
+		perror("minishell: fork");
+		shell->exit_status = 1;
 		return (-1);
+	}
 	if (pid == 0)
 		handle_pipe_child(shell, cmd, pipe_fd, prev_fd);
 	return (pid);

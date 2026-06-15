@@ -12,6 +12,20 @@
 
 #include "../minishell.h"
 
+static char	*handle_home(t_cmd *cmd, char *oldpwd)
+{
+	char	*path;
+
+	path = get_env_value(cmd->shell->env, "HOME");
+	if (!path)
+	{
+		ft_putendl_fd("minishell: cd: HOME not set", 2);
+		free(oldpwd);
+		cmd->shell->exit_status = 1;
+	}
+	return (path);
+}
+
 static char	*handle_oldpwd(t_cmd *cmd, char *oldpwd)
 {
 	char	*path;
@@ -34,11 +48,11 @@ char	*get_target_path(t_cmd *cmd, char *oldpwd)
 	{
 		ft_putendl_fd("minishell: cd: too many arguments", 2);
 		free(oldpwd);
-		cmd->shell->exit_status = 1;
+		cmd->shell->exit_status = 2;
 		return (NULL);
 	}
 	if (!cmd->args[1])
-		return (get_env_value(cmd->shell->env, "HOME"));
+		return (handle_home(cmd, oldpwd));
 	if (ft_strcmp(cmd->args[1], "-") == 0)
 		return (handle_oldpwd(cmd, oldpwd));
 	return (cmd->args[1]);

@@ -74,7 +74,7 @@ char	*cmd_path(t_shell *shell, char *cmd)
 	char	*path;
 
 	if (has_path(cmd))
-		path = cmd;
+		path = ft_strdup(cmd);
 	else
 		path = check_path(shell, cmd);
 	return (path);

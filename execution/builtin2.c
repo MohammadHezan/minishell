@@ -100,7 +100,7 @@ void	ft_export(t_shell *shell, t_cmd *cmd)
 
 	if (!cmd->args[1])
 	{
-		ft_env(shell);
+		print_sorted_env(shell);
 		shell->exit_status = 0;
 		return ;
 	}

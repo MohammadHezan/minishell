@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-void	check_directory(char *cmd, char *path)
+void	check_directory(t_shell *shell, char *cmd, char *path)
 {
 	struct stat	path_stat;
 
@@ -20,12 +20,16 @@ void	check_directory(char *cmd, char *path)
 	{
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(cmd);
-		exit(126);
+		free(path);
+		free_shell(shell);
+		exit(127);
 	}
 	if (S_ISDIR(path_stat.st_mode))
 	{
 		ft_putstr_fd(cmd, STDERR_FILENO);
 		ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
+		free(path);
+		free_shell(shell);
 		exit(126);
 	}
 }
@@ -37,7 +41,11 @@ char	*get_valid_cmd_path(t_shell *shell, t_cmd *cmd)
 	if (!cmd || !cmd->args || !cmd->args[0])
 	{
 		if (cmd && (cmd->infile == -1 || cmd->outfile == -1))
+		{
+			free_shell(shell);
 			exit(1);
+		}
+		free_shell(shell);
 		exit(0);
 	}
 	path = cmd_path(shell, cmd->args[0]);
@@ -45,6 +53,7 @@ char	*get_valid_cmd_path(t_shell *shell, t_cmd *cmd)
 	{
 		ft_putstr_fd(cmd->args[0], STDERR_FILENO);
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+		free_shell(shell);
 		exit(127);
 	}
 	return (path);

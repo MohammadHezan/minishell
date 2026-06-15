@@ -75,7 +75,7 @@ void	handle_redirection(t_cmd *cmd, t_token **tok)
 	{
 		if (cmd->infile != STDIN_FILENO && cmd->infile != -1)
 			close(cmd->infile);
-		cmd->infile = handle_heredoc(cmd->shell, file);
+		cmd->infile = handle_heredoc(cmd->shell, file, !(*tok)->quote_type);
 	}
 	else
 		open_file(cmd, file, type);

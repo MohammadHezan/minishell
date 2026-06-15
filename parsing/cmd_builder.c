@@ -70,7 +70,7 @@ static void	fill_args(t_cmd *cmd, t_token **tok)
 	int	count;
 
 	count = count_args(*tok);
-	cmd->args = malloc(sizeof(char *) * (count + 1));
+	cmd->args = ft_calloc(count + 1, sizeof(char *));
 	if (!cmd->args)
 		return ;
 	i = 0;
@@ -85,24 +85,21 @@ static void	fill_args(t_cmd *cmd, t_token **tok)
 		else
 			handle_redirection(cmd, tok);
 	}
-	cmd->args[i] = NULL;
 }
 
 t_cmd	*build_cmd_table(t_shell *shell, t_token *tokens)
 {
-	t_cmd	*head;
 	t_cmd	*curr;
 	t_token	*tok;
 
-	head = NULL;
 	tok = tokens;
 	while (tok)
 	{
 		curr = create_cmd_node(shell);
+		add_cmd(&shell->current_cmd, curr);
 		fill_args(curr, &tok);
-		add_cmd(&head, curr);
 		if (tok && tok->type == PIPE)
 			tok = tok->next;
 	}
-	return (head);
+	return (shell->current_cmd);
 }

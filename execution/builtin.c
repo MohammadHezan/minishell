@@ -46,7 +46,7 @@ void	ft_cd(t_cmd *cmd)
 		oldpwd = ft_strdup("");
 	cmd->shell->exit_status = 0;
 	path = get_target_path(cmd, oldpwd);
-	if (!path && cmd->shell->exit_status == 1)
+	if (!path)
 		return ;
 	if (chdir(path) != 0)
 	{

@@ -52,7 +52,7 @@ void		setup_child_fds(t_cmd *cmd, int *pipe_fd, int prev_fd);
 int			fork_pipe_child(t_shell *shell, t_cmd *cmd, int *pipe_fd,
 				int prev_fd);
 void		init_pipe_vars(t_cmd **cmd, t_shell *shell, int *prev_fd, int *i);
-void		check_directory(char *cmd, char *path);
+void		check_directory(t_shell *shell, char *cmd, char *path);
 char		*get_valid_cmd_path(t_shell *shell, t_cmd *cmd);
 void		handle_parent_status(t_shell *shell, int status);
 void		run_fork_child(t_shell *shell);
@@ -62,6 +62,7 @@ void		restore_fds(int stdin_fd, int stdout_fd);
 void		ft_env(t_shell *shell);
 void		ft_unset(t_shell *shell, t_cmd *cmd);
 void		ft_export(t_shell *shell, t_cmd *cmd);
+void		print_sorted_env(t_shell *shell);
 void		export_one(t_shell *shell, char *arg);
 void		ft_exit(t_cmd *cmd);
 void		ft_pwd(t_shell *shell);
@@ -86,13 +87,16 @@ int			get_var_len(char *str);
 char		*join_and_free(char *s1, char *s2);
 int			has_quotes(char *str);
 char		*append_char(char *res, char c);
+void		word_split_token(t_token **tok_ptr);
+char		*expand_heredoc_line(char *str, t_shell *shell);
+char		*strip_quotes(char *str);
 
 t_cmd		*create_cmd_node(t_shell *shell);
 void		add_cmd(t_cmd **cmds, t_cmd *new_cmd);
 t_cmd		*build_cmd_table(t_shell *shell, t_token *tokens);
 
 void		handle_redirection(t_cmd *cmd, t_token **tok);
-int			handle_heredoc(t_shell *shell, char *limiter);
+int			handle_heredoc(t_shell *shell, char *limiter, int expand);
 
 t_env		*init_env(char **envp);
 void		init_shell(t_shell *shell, char **envp);
@@ -102,6 +106,7 @@ void		free_shell(t_shell *shell);
 void		init_signals(void);
 void		ignore_signals(void);
 void		exec_signals(void);
+int			heredoc_event_hook(void);
 
 void		execute_commands(t_shell *shell);
 

@@ -32,3 +32,9 @@ int	count_env(t_env *env)
 	}
 	return (count);
 }
+
+void	ignore_signals(void)
+{
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
+}

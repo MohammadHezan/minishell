@@ -88,10 +88,9 @@ void	ft_exit(t_cmd *cmd)
 	if (cmd->args[i + 1])
 	{
 		ft_putendl_fd("minishell: exit: too many arguments", 2);
-		cmd->shell->exit_status = 1;
+		cmd->shell->exit_status = 2;
 		return ;
 	}
-	ft_putendl_fd("exit", 2);
 	free_shell(cmd->shell);
 	exit((unsigned char)code);
 }

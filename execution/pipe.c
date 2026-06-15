@@ -12,19 +12,22 @@
 
 #include "../minishell.h"
 
-static void	wait_for_children(t_shell *shell, int cmd_count)
+static void	wait_for_children(t_shell *shell, int cmd_count, int failed)
 {
 	int	i;
 	int	status;
 
 	i = 0;
+	status = 0;
 	while (i < cmd_count)
 	{
 		waitpid(shell->pids[i], &status, 0);
-		if (i == cmd_count - 1)
+		if (i == cmd_count - 1 && !failed)
 			handle_parent_status(shell, status);
 		i++;
 	}
+	if (failed)
+		shell->exit_status = 1;
 	free(shell->pids);
 	shell->pids = NULL;
 }
@@ -32,7 +35,10 @@ static void	wait_for_children(t_shell *shell, int cmd_count)
 static void	handle_pipe_parent(t_cmd *cmd, int *pipe_fd, int *prev_fd)
 {
 	if (*prev_fd != -1)
+	{
 		close(*prev_fd);
+		*prev_fd = -1;
+	}
 	if (cmd->next)
 	{
 		close(pipe_fd[1]);
@@ -72,11 +78,13 @@ void	exec_pipe(t_shell *shell)
 	{
 		shell->pids[i] = fork_pipe_child(shell, cmd, pipe_fd, prev_fd);
 		if (shell->pids[i] == -1)
-			return ;
+			break ;
 		handle_pipe_parent(cmd, pipe_fd, &prev_fd);
 		cmd = cmd->next;
 		i++;
 	}
-	wait_for_children(shell, i);
+	if (prev_fd != -1)
+		close(prev_fd);
+	wait_for_children(shell, i, cmd != NULL);
 	init_signals();
 }
